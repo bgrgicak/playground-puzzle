@@ -1,0 +1,25 @@
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: #23282D;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 32px;
+    justify-content: center;
+    align-items: center;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    > a {
+        color: #FFFFFF;
+        text-decoration: none;
+    }
+    > svg {
+        fill: #FFFFFF;
+        margin: 0 8px;
+    }
+}
