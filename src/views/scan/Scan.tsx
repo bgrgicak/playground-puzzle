@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from "react";
 import { Icon, wordpress } from "@wordpress/icons";
 import { ViewContext } from "../../context/view.ts";
 
-import puzzle from "../../assets/puzzle.svg";
+import shape from "../../assets/shape.png";
 
 import "./Scan.scss";
 
@@ -72,8 +72,9 @@ export const Scan = () => {
 
     // ctx.globalCompositeOperation = "source-in";
     const img = new Image();
-    img.src = puzzle;
+    img.src = shape;
     img.width = window.innerWidth;
+    img.height = img.width * 0.885;
     ctx.drawImage(
       img,
       (window.innerWidth - img.width) / 2,
