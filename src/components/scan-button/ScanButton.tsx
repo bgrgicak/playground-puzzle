@@ -2,6 +2,7 @@ import { Button } from "@wordpress/components";
 import { wordpress } from "@wordpress/icons";
 import React from "react";
 import { useScanContext } from "../../context/scan.ts";
+import { processImage } from "../../site-builder/index.ts";
 
 export const ScanButton = () => {
   const { videoElement, scanArea } = useScanContext();
@@ -46,7 +47,17 @@ export const ScanButton = () => {
       canvasElement.width,
       canvasElement.height
     );
-    window.open(canvasElement.toDataURL("image/png"), "_blank");
+
+    processImage(canvasElement.toDataURL("image/png"))
+      .then((response) => {
+        console.log(response);
+        window.open(
+          "https://playground.wordpress.net/#" + JSON.stringify(response)
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
   return (
     <Button
