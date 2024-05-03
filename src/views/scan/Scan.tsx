@@ -1,32 +1,39 @@
 import React, { useContext, useState } from "react";
-import { Icon, wordpress } from "@wordpress/icons";
 import { ViewContext } from "../../context/view.ts";
 import { ScanVideo } from "../../components/scan-video/ScanVideo.tsx";
 
 import "./Scan.scss";
-import { VideoContext } from "../../context/video.ts";
-import { Button } from "@wordpress/components";
+import { ScanContext } from "../../context/scan.ts";
+import { ScanButton } from "../../components/scan-button/ScanButton.tsx";
 
 export const Scan = () => {
   const { setView } = useContext(ViewContext);
   const [loading, setLoading] = useState(true);
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
+    null
+  );
+  const [scanArea, setScanArea] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
 
-  const onClick = () => {
-    setView("site");
-  };
   return (
-    <VideoContext.Provider value={{ loading, setLoading }}>
+    <ScanContext.Provider
+      value={{
+        loading,
+        setLoading,
+        videoElement,
+        setVideoElement,
+        scanArea,
+        setScanArea,
+      }}
+    >
       <article className="view view--scan">
         <ScanVideo />
-        <Button
-          onClick={onClick}
-          variant="primary"
-          className="scan__action"
-          icon={wordpress}
-        >
-          Take me to my site
-        </Button>
+        {!loading && <ScanButton />}
       </article>
-    </VideoContext.Provider>
+    </ScanContext.Provider>
   );
 };

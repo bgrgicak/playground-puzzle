@@ -6,7 +6,7 @@ import { Site } from "./views/site/Site.tsx";
 import { ViewContext, ViewOptions } from "./context/view.ts";
 
 function App() {
-  const [view, setView] = useState<ViewOptions>("home");
+  const [view, setView] = useState<ViewOptions>("scan");
   const getView = () => {
     if (view === "scan") {
       return <Scan />;

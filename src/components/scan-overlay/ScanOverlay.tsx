@@ -4,8 +4,10 @@ import { useEffect, useRef } from "react";
 import shape from "../../assets/shape.png";
 
 import "./ScanOverlay.scss";
+import { useScanContext } from "../../context/scan.ts";
 
 export const ScanOverlay = () => {
+  const { setScanArea } = useScanContext();
   const overlay = useRef(null);
 
   const drawOverlay = () => {
@@ -34,13 +36,18 @@ export const ScanOverlay = () => {
         img.width = originalImageWidth;
       }
       img.height = img.width * (originalImageHeight / originalImageWidth);
-      ctx.drawImage(
-        img,
-        (window.innerWidth - img.width) / 2,
-        (window.innerHeight - img.height) / 2,
-        img.width,
-        img.height
-      );
+
+      const x = (window.innerWidth - img.width) / 2;
+      const y = (window.innerHeight - img.height) / 2;
+
+      setScanArea({
+        x,
+        y,
+        width: img.width,
+        height: img.height,
+      });
+
+      ctx.drawImage(img, x, y, img.width, img.height);
       ctx.fill();
     };
   };
