@@ -27,19 +27,22 @@ export const ScanOverlay = () => {
     const originalImageHeight = 458;
     const img = new Image();
     img.src = shape;
-    img.width = window.innerWidth - 70;
-    if (img.width > originalImageWidth) {
-      img.width = originalImageWidth;
-    }
-    img.height = img.width * (originalImageHeight / originalImageWidth);
-    ctx.drawImage(
-      img,
-      (window.innerWidth - img.width) / 2,
-      (window.innerHeight - img.height) / 2,
-      img.width,
-      img.height
-    );
-    ctx.fill();
+
+    img.onload = () => {
+      img.width = window.innerWidth - 70;
+      if (img.width > originalImageWidth) {
+        img.width = originalImageWidth;
+      }
+      img.height = img.width * (originalImageHeight / originalImageWidth);
+      ctx.drawImage(
+        img,
+        (window.innerWidth - img.width) / 2,
+        (window.innerHeight - img.height) / 2,
+        img.width,
+        img.height
+      );
+      ctx.fill();
+    };
   };
 
   useEffect(drawOverlay, [overlay]);

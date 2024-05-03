@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@wordpress/components": "^27.5.0",
     "@wordpress/icons": "^9.47.0",
     "@wp-playground/client": "^0.7.19",
     "react": "^18.3.1",
