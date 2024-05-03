@@ -3,6 +3,23 @@
 This app allows you to scan Playground puzzle pieces, and start a site using WordPress Playground.
 
 with the puzzle pieces you have scanned.
+
+## Installation
+
+To install the app, you need to have Node.js installed on your computer. You can download it from [here](https://nodejs.org/).
+
+After you have installed Node.js, you can install the app by running the following command in the project directory:
+
+```bash
+npm install
+```
+
+## Configuration
+
+Before you can start the app, you need to configure the app by creating a `.env` file in the project directory. You can copy the `.env.example` file and rename it to `.env`. You can then set the following variables in the `.env` file:
+
+- `REACT_APP_OPENAI_API_KEY`: Your OpenAI API key. You can get it from the [OpenAI dashboard](https://platform.openai.com/api-keys). The API key needs Model capabilities and must have a connected billing account to access GPT-4.
+
 ## Available Scripts
 
 In the project directory, you can run:
