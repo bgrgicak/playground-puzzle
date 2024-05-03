@@ -90,6 +90,7 @@ export const ScanVideo = () => {
         autoPlay={true}
         playsInline={true}
         muted={true}
+        className="scan-video__video"
       >
         Video stream not available.
       </video>

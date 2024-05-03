@@ -5,3 +5,17 @@ body,
   height: 100vh;
   overflow: hidden;
 }
+
+.components-button {
+  padding: 10px 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--Gutenberg-Gray-900, #1E1E1E);
+  border: none;
+  > svg {
+    margin-right: 8px;
+  }
+}

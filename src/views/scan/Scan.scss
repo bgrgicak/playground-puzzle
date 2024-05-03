@@ -1,25 +1,8 @@
+$spacing: 18px;
 .scan__action {
   position: absolute;
-  bottom: 18px;
-  width: calc(100% - 36px);
-  margin: 0 18px;
-  color: var(--Gutenberg-Gray-900, #1e1e1e);
-  text-align: center;
-  font-family: Inter;
-  font-size: 13px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 16px;
-  border-radius: 2px;
-  background: var(--Gutenberg-White, #fff);
-  padding: 10px 31px;
-  border: none;
-  left: 0;
+  left: $spacing;
+  bottom: $spacing;
+  width: calc(100% - #{$spacing * 2});
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  > svg {
-    margin-right: 8px;
-  }
 }

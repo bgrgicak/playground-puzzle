@@ -1,3 +1,9 @@
 .scan-video__canvas {
     display: none;
 }
+.scan-video__video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

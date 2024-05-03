@@ -34,12 +34,12 @@ $blue:#3858E9;
 
 .home__action {
     padding: 10px 31px;
-    border-radius: 2px;
-    border: 1px solid $blue;
     background: $blue;
     color: #FFFFFF;
-    cursor: pointer;
     margin: 0 0 32px;
+    > svg {
+        fill: #FFFFFF;
+    }
 }
 
 .home__image {

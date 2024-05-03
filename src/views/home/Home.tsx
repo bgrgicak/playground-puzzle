@@ -5,6 +5,8 @@ import background from "../../assets/home-background.png";
 
 import "./Home.scss";
 import { Footer } from "../../components/footer/Footer.tsx";
+import { Button } from "@wordpress/components";
+import { capturePhoto } from "@wordpress/icons";
 
 export const Home = () => {
   const { setView } = useContext(ViewContext);
@@ -22,12 +24,14 @@ export const Home = () => {
           Arrange the puzzles, take a picture, and see your setup come to life
           in seconds.
         </p>
-        <button
+        <Button
           onClick={onClick}
-          className="button button--primary home__action"
+          variant="primary"
+          className="home__action"
+          icon={capturePhoto}
         >
           Build your site
-        </button>
+        </Button>
         <img src={background} alt="Playground sites" className="home__image" />
       </article>
       <Footer />

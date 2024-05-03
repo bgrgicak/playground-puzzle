@@ -5,6 +5,7 @@ import { ScanVideo } from "../../components/scan-video/ScanVideo.tsx";
 
 import "./Scan.scss";
 import { VideoContext } from "../../context/video.ts";
+import { Button } from "@wordpress/components";
 
 export const Scan = () => {
   const { setView } = useContext(ViewContext);
@@ -17,13 +18,14 @@ export const Scan = () => {
     <VideoContext.Provider value={{ loading, setLoading }}>
       <article className="view view--scan">
         <ScanVideo />
-        <button
+        <Button
           onClick={onClick}
-          className="button button--primary scan__action"
+          variant="primary"
+          className="scan__action"
+          icon={wordpress}
         >
-          <Icon icon={wordpress} />
-          <span>Take me to my site</span>
-        </button>
+          Take me to my site
+        </Button>
       </article>
     </VideoContext.Provider>
   );
