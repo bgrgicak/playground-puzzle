@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { ViewContext } from "../../context/view.ts";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import background from "../../assets/home-background.png";
 
@@ -9,10 +9,9 @@ import { Button } from "@wordpress/components";
 import { capturePhoto } from "@wordpress/icons";
 
 export const Home = () => {
-  const { setView } = useContext(ViewContext);
-
+  const navigate = useNavigate();
   const onClick = () => {
-    setView("scan");
+    navigate("/scan");
   };
   return (
     <>

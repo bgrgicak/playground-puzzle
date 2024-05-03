@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { ViewContext } from "../../context/view.ts";
+import React, { useState } from "react";
 import { ScanVideo } from "../../components/scan-video/ScanVideo.tsx";
 
 import "./Scan.scss";
@@ -7,7 +6,6 @@ import { ScanContext } from "../../context/scan.ts";
 import { ScanButton } from "../../components/scan-button/ScanButton.tsx";
 
 export const Scan = () => {
-  const { setView } = useContext(ViewContext);
   const [loading, setLoading] = useState(true);
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
     null
