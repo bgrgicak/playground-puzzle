@@ -52,12 +52,14 @@ export const ScanOverlay = () => {
     };
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(drawOverlay, [overlay]);
   useEffect(() => {
     window.addEventListener("resize", drawOverlay);
     return () => {
       window.removeEventListener("resize", drawOverlay);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <canvas ref={overlay} className="scan-overlay" />;

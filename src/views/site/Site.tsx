@@ -1,4 +1,4 @@
-import React, { Ref, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { startPlaygroundWeb } from "@wp-playground/client";
 
 import { useNavigate } from "react-router-dom";

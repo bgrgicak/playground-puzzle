@@ -1,7 +1,6 @@
 import { generateSiteName, readImageContent } from "./openai.ts";
 
 import woo from "./blueprints/woo.json";
-import { plugins } from "@wordpress/icons";
 
 const actions: string[] = ["woo", "/wp-admin/", "site name"];
 
