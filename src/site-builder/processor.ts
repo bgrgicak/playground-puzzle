@@ -1,6 +1,7 @@
 import { generateSiteName, readImageContent } from "./openai.ts";
 
 import woo from "./blueprints/woo.json";
+import { plugins } from "@wordpress/icons";
 
 const actions: string[] = ["woo", "/wp-admin/", "site name"];
 
@@ -57,7 +58,7 @@ export const mergeBlueprints = (blueprints: any[]) => {
   };
 
   const landingPages: string[] = [];
-  let multiplePlugins = false;
+  let pluginsInstalled = 0;
   let themeInstalled = false;
   for (const blueprint of blueprints) {
     if (!blueprint) {
@@ -76,12 +77,9 @@ export const mergeBlueprints = (blueprints: any[]) => {
       ),
     ];
 
-    if (
-      multiplePlugins === false &&
-      blueprint.steps.find((step: any) => step.step === "installPlugin")
-    ) {
-      multiplePlugins = true;
-    }
+    pluginsInstalled += blueprint.steps.filter(
+      (step: any) => step.step === "installPlugin"
+    ).length;
 
     if (
       themeInstalled === false &&
@@ -96,16 +94,11 @@ export const mergeBlueprints = (blueprints: any[]) => {
     newBlueprint.landingPage = landingPages[0];
   }
   // If a theme is installed, go to the homepage
-  else if (
-    newBlueprint.steps.find((step: any) => step.step === "installTheme")
-  ) {
+  else if (themeInstalled) {
     newBlueprint.landingPage = "/";
   }
   // If multiple plugins are installed, go to the plugins list
-  else if (
-    newBlueprint.steps.find((step: any) => step.step === "installPlugin")
-      .length > 1
-  ) {
+  else if (pluginsInstalled > 1) {
     newBlueprint.landingPage = "/wp-admin/plugins.php";
   }
 
