@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Ref, useEffect, useRef, useState } from "react";
 import { startPlaygroundWeb } from "@wp-playground/client";
 
 import { useNavigate } from "react-router-dom";
@@ -20,32 +20,32 @@ export const Site = () => {
   const navigate = useNavigate();
   const iframe = useRef<HTMLIFrameElement>(null);
   const blueprint = currentBlueprint();
-  const [isPlaygroundRunning, setIsPlaygroundRunning] = useState(false);
+  const isPlaygroundRunning = useRef<boolean>(false);
 
   useEffect(() => {
     if (!blueprint) {
       navigate("/scan");
       return;
     }
-  }, [blueprint, navigate, iframe]);
+    if (!iframe.current) {
+      return;
+    }
+    if (isPlaygroundRunning.current) {
+      return;
+    }
 
-  useEffect(() => {
     const loadPlayground = async () => {
-      if (!iframe.current) {
-        return;
-      }
-      if (isPlaygroundRunning) {
-        return;
-      }
-      setIsPlaygroundRunning(true);
-      await startPlaygroundWeb({
-        iframe: iframe.current,
+      const client = await startPlaygroundWeb({
+        iframe: iframe.current!,
         remoteUrl: `https://playground.wordpress.net/remote.html`,
         blueprint,
       });
+      await client.isReady();
     };
+
+    isPlaygroundRunning.current = true;
     loadPlayground();
-  }, [blueprint, iframe, isPlaygroundRunning]);
+  }, [blueprint, navigate, iframe]);
 
   return (
     <div className="view view--site">
