@@ -57,7 +57,6 @@ export const ScanButton = () => {
     setError(null);
     processImage(canvasElement.toDataURL("image/png"))
       .then((response) => {
-        console.log(response);
         setBlueprint(mergeBlueprints([blueprint, response]));
       })
       .catch((error) => {

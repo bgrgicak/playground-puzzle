@@ -25,7 +25,7 @@ export const Scan = () => {
   });
 
   const onClick = () => {
-    navigate("/playground");
+    navigate("/playground#" + JSON.stringify(blueprint));
   };
 
   const onDismiss = () => {

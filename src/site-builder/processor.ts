@@ -31,9 +31,6 @@ export const processImage = async (data: string) => {
   );
   if (imageActions.includes("/wp-admin/")) {
     blueprint["landingPage"] = "/wp-admin/";
-    blueprint.steps.push({
-      step: "login",
-    });
   }
 
   if (imageActions.includes("site name")) {
@@ -44,14 +41,19 @@ export const processImage = async (data: string) => {
       },
     });
   }
-
   return blueprint;
 };
+
+const excludedSteps = ["login"];
 
 export const mergeBlueprints = (blueprints: any[]) => {
   const newBlueprint: any = {
     landingPage: "/",
-    steps: [],
+    steps: [
+      {
+        step: "login",
+      },
+    ],
   };
 
   const landingPages: string[] = [];
@@ -67,7 +69,12 @@ export const mergeBlueprints = (blueprints: any[]) => {
     if (!blueprint.steps) {
       continue;
     }
-    newBlueprint.steps = [...newBlueprint.steps, ...blueprint.steps];
+    newBlueprint.steps = [
+      ...newBlueprint.steps,
+      ...blueprint.steps.filter(
+        (step: any) => !excludedSteps.includes(step.step)
+      ),
+    ];
 
     if (
       multiplePlugins === false &&
