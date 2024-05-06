@@ -1,8 +1,20 @@
 $spacing: 18px;
-.scan__action {
+.scan__actions {
   position: absolute;
   left: $spacing;
   bottom: $spacing;
   width: calc(100% - #{$spacing * 2});
   z-index: 2;
+}
+
+.scan__action {
+  width: 100%;
+}
+
+.components-notice.scan__error {
+  margin: $spacing;
+  z-index: 2;
+  .components-button {
+    padding: 6px;
+  }
 }

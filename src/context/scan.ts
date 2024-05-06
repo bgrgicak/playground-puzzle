@@ -17,6 +17,8 @@ export const ScanContext = createContext<{
     width: number;
     height: number;
   }) => void;
+  error: string | null;
+  setError: (error: string | null) => void;
 }>({
   loading: true,
   setLoading: () => {},
@@ -29,5 +31,7 @@ export const ScanContext = createContext<{
     height: 0,
   },
   setScanArea: () => {},
+  error: null,
+  setError: () => {},
 });
 export const useScanContext = () => useContext(ScanContext);

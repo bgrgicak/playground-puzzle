@@ -32,9 +32,7 @@ $blue:#3858E9;
     margin: 0 0 32px;
 }
 
-.home__action {
-    padding: 10px 31px;
-    background: $blue;
+.scan .components-button.home__action {
     color: #FFFFFF;
     margin: 0 0 32px;
     > svg {
@@ -47,4 +45,5 @@ $blue:#3858E9;
     z-index: -1;
     position: absolute;
     bottom: 0;
+    max-width: 428px;
 }

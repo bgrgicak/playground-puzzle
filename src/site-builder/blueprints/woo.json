@@ -1,0 +1,15 @@
+{
+  "landingPage": "/wp-admin/admin.php?page=wc-setup",
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginZipFile": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    }
+  ]
+}

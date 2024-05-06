@@ -1,11 +1,16 @@
 import { Button } from "@wordpress/components";
-import { wordpress } from "@wordpress/icons";
-import React from "react";
+import { capturePhoto } from "@wordpress/icons";
+import React, { useState } from "react";
 import { useScanContext } from "../../context/scan.ts";
-import { processImage } from "../../site-builder/index.ts";
+import { mergeBlueprints, processImage } from "../../site-builder/index.ts";
+
+import "./ScanButton.scss";
+import { useBlueprintContext } from "../../context/blueprint.ts";
 
 export const ScanButton = () => {
-  const { videoElement, scanArea } = useScanContext();
+  const { videoElement, scanArea, setError } = useScanContext();
+  const { blueprint, setBlueprint } = useBlueprintContext();
+  const [loading, setLoading] = useState(false);
 
   const onClick = () => {
     if (!videoElement) {
@@ -48,25 +53,27 @@ export const ScanButton = () => {
       canvasElement.height
     );
 
+    setLoading(true);
+    setError(null);
     processImage(canvasElement.toDataURL("image/png"))
       .then((response) => {
         console.log(response);
-        window.open(
-          "https://playground.wordpress.net/#" + JSON.stringify(response)
-        );
+        setBlueprint(mergeBlueprints([blueprint, response]));
       })
       .catch((error) => {
-        console.error(error);
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
   return (
     <Button
       onClick={onClick}
       variant="primary"
-      className="scan__action"
-      icon={wordpress}
-    >
-      Scan puzzle pieces
-    </Button>
+      className="scan__button"
+      icon={capturePhoto}
+      isBusy={loading}
+    />
   );
 };

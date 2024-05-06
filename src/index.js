@@ -1,32 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import "../node_modules/@wordpress/components/build-style/style.css";
 import "./index.css";
+
+import React from "react";
+import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
-import { Home } from "./views/home/Home.tsx";
-import { Scan } from "./views/scan/Scan.tsx";
-import { Site } from "./views/site/Site.tsx";
-
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./index.css";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-  },
-  {
-    path: "/scan",
-    element: <Scan />,
-  },
-  {
-    path: "/playground",
-    element: <Site />,
-  },
-]);
+import { App } from "./App.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <App />
   </React.StrictMode>
 );
 
