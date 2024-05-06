@@ -53,9 +53,14 @@ export const ScanButton = () => {
       canvasElement.height
     );
 
+    const image = canvasElement.toDataURL("image/png");
+
+    videoCanvas.remove();
+    canvasElement.remove();
+
     setLoading(true);
     setError(null);
-    processImage(canvasElement.toDataURL("image/png"))
+    processImage(image)
       .then((response) => {
         setBlueprint(mergeBlueprints([blueprint, response]));
       })
