@@ -33,6 +33,9 @@ export const readImageContent = async (data: string) => {
   })
     .then((response) => response.json())
     .then((response) => {
+      if (!response.choices) {
+        throw new Error("No response from OpenAI");
+      }
       return response.choices[0].message.content
         .split("\n")
         .map((line: string) => line.trim());

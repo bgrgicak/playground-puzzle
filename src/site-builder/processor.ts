@@ -1,10 +1,10 @@
 import { generateSiteName, readImageContent } from "./openai.ts";
 
-import woo from "./steps/woo.json";
+import woo from "./blueprints/woo.json";
 
 const actions: string[] = ["woo", "/wp-admin/", "site name"];
 
-const actionSteps = {
+const actionBlueprints = {
   woo,
 };
 
@@ -19,17 +19,16 @@ export const processImage = async (data: string) => {
     })
     .filter((item) => item !== undefined);
   if (imageActions === undefined || imageActions.length === 0) {
-    throw new Error("No actions found");
+    throw new Error(
+      "No puzzle pieces found. Please ensure the text is clear and try again."
+    );
   }
-  const steps = imageActions
-    .map((action) => actionSteps[action as string])
-    .filter((item) => item !== undefined)
-    .reduce((acc, val) => acc.concat(val), []);
 
-  const blueprint = {
-    steps: steps,
-  };
-
+  const blueprint: any = (imageActions as string[]).reduce(
+    (acc: any, action: string) =>
+      mergeBlueprints([acc, actionBlueprints[action]]),
+    {}
+  );
   if (imageActions.includes("/wp-admin/")) {
     blueprint["landingPage"] = "/wp-admin/";
     blueprint.steps.push({
@@ -47,4 +46,61 @@ export const processImage = async (data: string) => {
   }
 
   return blueprint;
+};
+
+export const mergeBlueprints = (blueprints: any[]) => {
+  const newBlueprint: any = {
+    landingPage: "/",
+    steps: [],
+  };
+
+  const landingPages: string[] = [];
+  let multiplePlugins = false;
+  let themeInstalled = false;
+  for (const blueprint of blueprints) {
+    if (!blueprint) {
+      continue;
+    }
+    if (blueprint.landingPage) {
+      landingPages.push(blueprint.landingPage);
+    }
+    if (!blueprint.steps) {
+      continue;
+    }
+    newBlueprint.steps = [...newBlueprint.steps, ...blueprint.steps];
+
+    if (
+      multiplePlugins === false &&
+      blueprint.steps.find((step: any) => step.step === "installPlugin")
+    ) {
+      multiplePlugins = true;
+    }
+
+    if (
+      themeInstalled === false &&
+      blueprint.steps.find((step: any) => step.step === "installTheme")
+    ) {
+      themeInstalled = true;
+    }
+  }
+
+  // If one landing page is defined, use it
+  if (landingPages.length === 1) {
+    newBlueprint.landingPage = landingPages[0];
+  }
+  // If a theme is installed, go to the homepage
+  else if (
+    newBlueprint.steps.find((step: any) => step.step === "installTheme")
+  ) {
+    newBlueprint.landingPage = "/";
+  }
+  // If multiple plugins are installed, go to the plugins list
+  else if (
+    newBlueprint.steps.find((step: any) => step.step === "installPlugin")
+      .length > 1
+  ) {
+    newBlueprint.landingPage = "/wp-admin/plugins.php";
+  }
+
+  return newBlueprint;
 };
