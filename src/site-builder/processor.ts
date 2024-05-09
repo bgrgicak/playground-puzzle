@@ -1,21 +1,35 @@
-import { generateSiteName, readImageContent } from "./openai.ts";
-
+import { siteName } from "./api.ts";
 import woo from "./blueprints/woo.json";
 
-const actions: string[] = ["woo", "/wp-admin/", "site name"];
+export type Action = {
+  color: string;
+  title: string;
+};
+
+export const actions: { [key: string]: Action } = {
+  woo: {
+    color: "#7f54b3",
+    title: "WooCommerce",
+  },
+  "site name": {
+    color: "#1D35B4",
+    title: "Site Name",
+  },
+  "/wp-admin/": {
+    color: "#1D35B4",
+    title: "/wp-admin/",
+  },
+};
 
 const actionBlueprints = {
   woo,
 };
 
-export const processImage = async (data: string) => {
-  const imageData: string[] = await readImageContent(data);
-
+export const processImage = async (imageData: string[]) => {
   const imageActions = imageData
     .map((item) => {
       item = item.toLowerCase();
-      const action = actions.find((key) => item.includes(key));
-      return action;
+      return Object.keys(actions).find((key) => item.includes(key));
     })
     .filter((item) => item !== undefined);
   if (imageActions === undefined || imageActions.length === 0) {
@@ -37,7 +51,7 @@ export const processImage = async (data: string) => {
     blueprint.steps.push({
       step: "setSiteOptions",
       options: {
-        blogname: await generateSiteName(),
+        blogname: await siteName(),
       },
     });
   }
