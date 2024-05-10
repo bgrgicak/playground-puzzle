@@ -8,13 +8,20 @@ import { Icon, Notice } from "@wordpress/components";
 import { useNavigate } from "react-router-dom";
 import { SiteButton } from "../../components/SiteButton/SiteButton.tsx";
 import { capturePhoto } from "@wordpress/icons";
-import { getActions, processImage } from "../../site-builder/processor.ts";
+import {
+  Action,
+  actions,
+  getActions,
+  processImage,
+} from "../../site-builder/processor.ts";
 
 export const Scan = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [siteLoading, setSiteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [detectedActions, setDetectedActions] = useState<string[]>();
+  const [newAction, setNewAction] = useState<Action | null>(null);
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
     null
   );
@@ -32,8 +39,17 @@ export const Scan = () => {
       );
       return;
     }
-    const blueprint = await processImage(detectedActions);
-    navigate("/playground#" + JSON.stringify(blueprint));
+    setSiteLoading(true);
+    processImage(detectedActions)
+      .then((blueprint) => {
+        navigate("/playground#" + JSON.stringify(blueprint));
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setSiteLoading(false);
+      });
   };
 
   const onDismiss = () => {
@@ -41,23 +57,24 @@ export const Scan = () => {
   };
 
   const onSuccess = (newActionTitles: string[]) => {
-    const newActions = getActions(newActionTitles);
+    let newActions = getActions(newActionTitles).filter(
+      (newAction) =>
+        !detectedActions ||
+        !detectedActions.find((detectedAction) => detectedAction === newAction)
+    );
     if (!newActions || newActions.length === 0) {
       return;
     }
-    if (!detectedActions) {
-      setDetectedActions(newActions as string[]);
-    } else {
-      setDetectedActions([
-        ...detectedActions,
-        ...(newActions as string[]).filter(
-          (newAction) =>
-            !detectedActions.find(
-              (detectedAction) => detectedAction === newAction
-            )
-        ),
-      ]);
-    }
+
+    setNewAction(actions[newActions[newActions.length - 1]!]);
+    setTimeout(() => {
+      setNewAction(null);
+    }, 2000);
+
+    setDetectedActions([
+      ...(detectedActions || []),
+      ...(newActions as string[]),
+    ]);
   };
 
   const dots: React.ReactNode[] = [];
@@ -103,9 +120,13 @@ export const Scan = () => {
         <ScanVideo />
         {!loading && (
           <div className="scan__actions">
-            <ScanButton onSuccess={onSuccess} />
+            {!siteLoading && <ScanButton onSuccess={onSuccess} />}
             {detectedActions && (
-              <SiteButton onClick={onClick} detectedActions={detectedActions} />
+              <SiteButton
+                onClick={onClick}
+                newAction={newAction}
+                isBusy={siteLoading}
+              />
             )}
           </div>
         )}

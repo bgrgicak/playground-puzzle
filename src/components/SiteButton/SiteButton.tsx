@@ -1,38 +1,20 @@
 import { Button } from "@wordpress/components";
 import "./SiteButton.scss";
 import { check, wordpress } from "@wordpress/icons";
-import React, { useEffect, useRef, useState } from "react";
-import { actions } from "../../site-builder/processor.ts";
+import React, { useEffect, useState } from "react";
 
 const mainCta = "Take me to my site";
-const successTimeout = 2000;
 
-export const SiteButton = ({ onClick, detectedActions }) => {
-  const actionCount = useRef<number>(0);
-  const [timeout, setTimeout] = useState<number | null>(null);
+export const SiteButton = ({ onClick, newAction, isBusy }) => {
   const [title, setTitle] = useState<string>();
 
   useEffect(() => {
-    if (detectedActions && detectedActions.length > actionCount.current) {
-      actionCount.current = detectedActions.length;
-      if (actions[detectedActions[detectedActions.length - 1]]) {
-        setTitle(
-          "Added " + actions[detectedActions[detectedActions.length - 1]].title
-        );
-
-        setTimeout(
-          window.setTimeout(() => {
-            setTitle(mainCta);
-          }, successTimeout)
-        );
-      }
+    if (newAction) {
+      setTitle("Added " + newAction.title);
+    } else {
+      setTitle(mainCta);
     }
-    return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    };
-  }, [detectedActions]);
+  }, [newAction]);
 
   if (!title) {
     return null;
@@ -51,6 +33,7 @@ export const SiteButton = ({ onClick, detectedActions }) => {
       variant="secondary"
       className={classNames.join(" ")}
       icon={icon}
+      isBusy={isBusy}
     >
       {title}
     </Button>
