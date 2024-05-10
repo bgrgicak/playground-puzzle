@@ -38,23 +38,23 @@ export const getActions = (titles: string[]) => {
     .filter((item) => item !== undefined);
 };
 
-export const processImage = async (imageActions: string[]) => {
-  if (imageActions === undefined || imageActions.length === 0) {
+export const processImage = async (actions: string[]) => {
+  if (actions === undefined || actions.length === 0) {
     throw new Error(
       "No puzzle pieces found. Please ensure the text is clear and try again."
     );
   }
 
-  const blueprint: any = (imageActions as string[]).reduce(
+  const blueprint: any = (actions as string[]).reduce(
     (acc: any, action: string) =>
       mergeBlueprints([acc, actionBlueprints[action]]),
     {}
   );
-  if (imageActions.includes("/wp-admin/")) {
+  if (actions.includes("/wp-admin/")) {
     blueprint["landingPage"] = "/wp-admin/";
   }
 
-  if (imageActions.includes("site name")) {
+  if (actions.includes("site name")) {
     blueprint.steps.push({
       step: "setSiteOptions",
       options: {
@@ -63,13 +63,15 @@ export const processImage = async (imageActions: string[]) => {
     });
   }
 
-  if (imageActions.includes("post")) {
+  if (actions.includes("post")) {
     const data = await post();
     blueprint.steps.push({
       step: "runPHP",
       // $insert_post='${data.slug}'; is a hack to allow us to find this step and extract the slug
-      code: `<?php $insert_post='${data.slug}'; require_once 'wordpress/wp-load.php'; wp_insert_post(array('post_title' => '${data.title}', 'post_content' => '${data.content}', 'post_slug' => '${data.slug}', 'post_status' => 'publish')); ?>`,
+      code: `<?php require_once 'wordpress/wp-load.php'; wp_insert_post(array('post_title' => '${data.title}', 'post_content' => '${data.content}', 'post_slug' => '${data.slug}', 'post_status' => 'publish')); ?>`,
     });
+    // override the landing page to open the post
+    blueprint.landingPage = `/${data.slug}`;
   }
   return blueprint;
 };
@@ -78,10 +80,19 @@ const excludedSteps = ["login"];
 
 const mergeBlueprints = (blueprints: any[]) => {
   const newBlueprint: any = {
-    landingPage: "/",
+    phpExtensionBundles: ["kitchen-sink"],
+    features: {
+      networking: true,
+    },
     steps: [
       {
         step: "login",
+      },
+      {
+        // Use pretty permalinks to ensure the post is accessible
+        step: "writeFile",
+        path: "/wordpress/wp-content/mu-plugins/rewrite.php",
+        data: "<?php add_action( 'after_setup_theme', function() { global $wp_rewrite; $wp_rewrite->set_permalink_structure('/%postname%/'); $wp_rewrite->flush_rules(); } );",
       },
     ],
   };
@@ -118,31 +129,19 @@ const mergeBlueprints = (blueprints: any[]) => {
     }
   }
 
-  const postSteps = newBlueprint.steps.find(
-    (step: any) => step.code && step.code.startsWith("<?php $insert_post=")
-  );
-
-  // If a post was generated, go to the post
-  if (postSteps && postSteps.length > 0) {
-    const regex = /\$insert_post='(.*?)'/;
-    const codeString = postSteps[postSteps.length - 1];
-    const match = codeString.match(regex);
-    if (match) {
-      const extractedSlug = match[1];
-      newBlueprint.landingPage = "/" + extractedSlug;
-    }
-  }
   // If one landing page is defined, use it
-  else if (landingPages.length === 1) {
-    newBlueprint.landingPage = landingPages[0];
-  }
-  // If a theme is installed, go to the homepage
-  else if (themeInstalled) {
+  if (themeInstalled) {
     newBlueprint.landingPage = "/";
   }
   // If multiple plugins are installed, go to the plugins list
   else if (pluginsInstalled > 1) {
     newBlueprint.landingPage = "/wp-admin/plugins.php";
+  }
+  // If multiple landing pages are defined, go to the first one
+  else if (landingPages.length === 1) {
+    newBlueprint.landingPage = landingPages[0];
+  } else {
+    newBlueprint.landingPage = "/";
   }
 
   return newBlueprint;
