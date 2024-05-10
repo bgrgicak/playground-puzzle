@@ -2,13 +2,7 @@ import { Button } from "@wordpress/components";
 import { capturePhoto } from "@wordpress/icons";
 import React, { useState } from "react";
 import { useScanContext } from "../../context/scan.ts";
-import {
-  actions,
-  mergeBlueprints,
-  processImage,
-} from "../../site-builder/index.ts";
 
-import { useBlueprintContext } from "../../context/blueprint.ts";
 import { getImageFromCanvas } from "../../site-builder/image.ts";
 
 import "./ScanButton.scss";
@@ -16,7 +10,6 @@ import { readImageContent } from "../../site-builder/api.ts";
 
 export const ScanButton = ({ onSuccess }) => {
   const { videoElement, scanArea, setError } = useScanContext();
-  const { blueprint, setBlueprint } = useBlueprintContext();
   const [loading, setLoading] = useState(false);
 
   const onClick = async () => {
@@ -32,11 +25,11 @@ export const ScanButton = ({ onSuccess }) => {
     setLoading(true);
     setError(null);
 
-    const imageData: string[] = await readImageContent(image);
-    processImage(imageData)
+    readImageContent(image)
       .then((response) => {
-        setBlueprint(mergeBlueprints([blueprint, response]));
-        onSuccess(imageData.map((item) => actions[item]));
+        if (typeof onSuccess === "function") {
+          onSuccess(response);
+        }
       })
       .catch((error) => {
         setError(error.message);

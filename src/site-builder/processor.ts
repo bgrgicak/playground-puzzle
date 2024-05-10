@@ -1,5 +1,5 @@
-import { siteName } from "./api.ts";
-import woo from "./blueprints/woo.json";
+import { siteName, post } from "./api.ts";
+import woocommerce from "./blueprints/woocommerce.json";
 
 export type Action = {
   color: string;
@@ -7,7 +7,7 @@ export type Action = {
 };
 
 export const actions: { [key: string]: Action } = {
-  woo: {
+  woocommerce: {
     color: "#7f54b3",
     title: "WooCommerce",
   },
@@ -19,19 +19,26 @@ export const actions: { [key: string]: Action } = {
     color: "#1D35B4",
     title: "/wp-admin/",
   },
+  post: {
+    color: "#1D35B4",
+    title: "Post",
+  },
 };
 
 const actionBlueprints = {
-  woo,
+  woocommerce,
 };
 
-export const processImage = async (imageData: string[]) => {
-  const imageActions = imageData
+export const getActions = (titles: string[]) => {
+  return titles
     .map((item) => {
       item = item.toLowerCase();
       return Object.keys(actions).find((key) => item.includes(key));
     })
     .filter((item) => item !== undefined);
+};
+
+export const processImage = async (imageActions: string[]) => {
   if (imageActions === undefined || imageActions.length === 0) {
     throw new Error(
       "No puzzle pieces found. Please ensure the text is clear and try again."
@@ -55,12 +62,21 @@ export const processImage = async (imageData: string[]) => {
       },
     });
   }
+
+  if (imageActions.includes("post")) {
+    const data = await post();
+    blueprint.steps.push({
+      step: "runPHP",
+      // $insert_post='${data.slug}'; is a hack to allow us to find this step and extract the slug
+      code: `<?php $insert_post='${data.slug}'; require_once 'wordpress/wp-load.php'; wp_insert_post(array('post_title' => '${data.title}', 'post_content' => '${data.content}', 'post_slug' => '${data.slug}', 'post_status' => 'publish')); ?>`,
+    });
+  }
   return blueprint;
 };
 
 const excludedSteps = ["login"];
 
-export const mergeBlueprints = (blueprints: any[]) => {
+const mergeBlueprints = (blueprints: any[]) => {
   const newBlueprint: any = {
     landingPage: "/",
     steps: [
@@ -102,8 +118,22 @@ export const mergeBlueprints = (blueprints: any[]) => {
     }
   }
 
+  const postSteps = newBlueprint.steps.find(
+    (step: any) => step.code && step.code.startsWith("<?php $insert_post=")
+  );
+
+  // If a post was generated, go to the post
+  if (postSteps && postSteps.length > 0) {
+    const regex = /\$insert_post='(.*?)'/;
+    const codeString = postSteps[postSteps.length - 1];
+    const match = codeString.match(regex);
+    if (match) {
+      const extractedSlug = match[1];
+      newBlueprint.landingPage = "/" + extractedSlug;
+    }
+  }
   // If one landing page is defined, use it
-  if (landingPages.length === 1) {
+  else if (landingPages.length === 1) {
     newBlueprint.landingPage = landingPages[0];
   }
   // If a theme is installed, go to the homepage
