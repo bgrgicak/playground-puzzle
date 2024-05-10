@@ -1,32 +1,95 @@
 import { siteName, post } from "./api.ts";
 import woocommerce from "./blueprints/woocommerce.json";
+import omnisend from "./blueprints/omnisend.json";
+import google from "./blueprints/google.json";
+import jetpack from "./blueprints/jetpack.json";
+import elementor from "./blueprints/elementor.json";
+import yith from "./blueprints/yith.json";
+import dynamicOoo from "./blueprints/dynamic-ooo.json";
+import personalizewp from "./blueprints/personalizewp.json";
+import jetformbuilder from "./blueprints/jetformbuilder.json";
+import fastspring from "./blueprints/fastspring.json";
+import cookiebot from "./blueprints/cookiebot.json";
+import w3TotalCache from "./blueprints/w3-total-cache.json";
+import siteground from "./blueprints/siteground.json";
+import yoast from "./blueprints/yoast.json";
 
 export type Action = {
-  color: string;
   title: string;
 };
 
 export const actions: { [key: string]: Action } = {
+  omnisend: {
+    title: "Omnisend",
+  },
   woocommerce: {
-    color: "#7f54b3",
     title: "WooCommerce",
   },
   "site name": {
-    color: "#1D35B4",
     title: "Site Name",
   },
   "/wp-admin/": {
-    color: "#1D35B4",
     title: "/wp-admin/",
   },
   post: {
-    color: "#1D35B4",
     title: "Post",
+  },
+  multisite: {
+    title: "Multisite",
+  },
+  google: {
+    title: "Google",
+  },
+  jetpack: {
+    title: "Jetpack",
+  },
+  elementor: {
+    title: "Elementor",
+  },
+  yith: {
+    title: "YITH",
+  },
+  "dynamic.ooo": {
+    title: "Dynamic.ooo",
+  },
+  personalizewp: {
+    title: "PersonalizeWP",
+  },
+  jetformbuilder: {
+    title: "JetFormBuilder",
+  },
+  fastspring: {
+    title: "Fastspring",
+  },
+  cookiebot: {
+    title: "Cookiebot",
+  },
+  "w3 total cache": {
+    title: "W3 Total Cache",
+  },
+  siteground: {
+    title: "SiteGround",
+  },
+  yoast: {
+    title: "Yoast",
   },
 };
 
 const actionBlueprints = {
   woocommerce,
+  omnisend,
+  google,
+  jetpack,
+  elementor,
+  yith,
+  "dynamic.ooo": dynamicOoo,
+  personalizewp,
+  jetformbuilder,
+  fastspring,
+  cookiebot,
+  "w3 total cache": w3TotalCache,
+  siteground,
+  yoast,
 };
 
 export const getActions = (titles: string[]) => {
@@ -52,6 +115,13 @@ export const processImage = async (actions: string[]) => {
   );
   if (actions.includes("/wp-admin/")) {
     blueprint["landingPage"] = "/wp-admin/";
+  }
+
+  if (actions.includes("multisite")) {
+    blueprint.steps.push({
+      step: "enableMultisite",
+    });
+    blueprint["landingPage"] = "/wp-admin/network/";
   }
 
   if (actions.includes("site name")) {
@@ -129,13 +199,13 @@ const mergeBlueprints = (blueprints: any[]) => {
     }
   }
 
-  // If one landing page is defined, use it
-  if (themeInstalled) {
-    newBlueprint.landingPage = "/";
-  }
   // If multiple plugins are installed, go to the plugins list
-  else if (pluginsInstalled > 1) {
+  if (pluginsInstalled > 1) {
     newBlueprint.landingPage = "/wp-admin/plugins.php";
+  }
+  // If one landing page is defined, use it
+  else if (themeInstalled) {
+    newBlueprint.landingPage = "/";
   }
   // If multiple landing pages are defined, go to the first one
   else if (landingPages.length === 1) {
