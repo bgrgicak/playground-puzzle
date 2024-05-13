@@ -17,25 +17,25 @@ import yoast from "./blueprints/yoast.json";
 export type Action = {
   title: string;
 };
-
+// TODO enable the rest of the actions once the blueprints are fixed
 export const actions: { [key: string]: Action } = {
+  multisite: {
+    title: "Multisite",
+  },
+  "site name": {
+    title: "Site Name",
+  },
+  post: {
+    title: "Post",
+  },
+  "/wp-admin/": {
+    title: "/wp-admin/",
+  },
   omnisend: {
     title: "Omnisend",
   },
   woocommerce: {
     title: "WooCommerce",
-  },
-  "site name": {
-    title: "Site Name",
-  },
-  "/wp-admin/": {
-    title: "/wp-admin/",
-  },
-  post: {
-    title: "Post",
-  },
-  multisite: {
-    title: "Multisite",
   },
   google: {
     title: "Google",
@@ -58,9 +58,9 @@ export const actions: { [key: string]: Action } = {
   jetformbuilder: {
     title: "JetFormBuilder",
   },
-  fastspring: {
-    title: "Fastspring",
-  },
+  // fastspring: {
+  //   title: "Fastspring",
+  // },
   cookiebot: {
     title: "Cookiebot",
   },
@@ -70,9 +70,9 @@ export const actions: { [key: string]: Action } = {
   siteground: {
     title: "SiteGround",
   },
-  yoast: {
-    title: "Yoast",
-  },
+  // yoast: {
+  //   title: "Yoast",
+  // },
 };
 
 const actionBlueprints = {
@@ -85,11 +85,11 @@ const actionBlueprints = {
   "dynamic.ooo": dynamicOoo,
   personalizewp,
   jetformbuilder,
-  fastspring,
+  // fastspring,
   cookiebot,
   "w3 total cache": w3TotalCache,
   siteground,
-  yoast,
+  // yoast,
 };
 
 export const getActions = (titles: string[]) => {
@@ -118,31 +118,53 @@ export const processImage = async (actions: string[]) => {
   }
 
   if (actions.includes("multisite")) {
-    blueprint.steps.push({
-      step: "enableMultisite",
-    });
+    blueprint.steps = [
+      {
+        step: "enableMultisite",
+      },
+      ...blueprint.steps,
+    ];
     blueprint["landingPage"] = "/wp-admin/network/";
   }
 
   if (actions.includes("site name")) {
-    blueprint.steps.push({
-      step: "setSiteOptions",
-      options: {
-        blogname: await siteName(),
+    blueprint.steps = [
+      {
+        step: "setSiteOptions",
+        options: {
+          blogname: await siteName(),
+        },
       },
-    });
+      ...blueprint.steps,
+    ];
   }
 
   if (actions.includes("post")) {
     const data = await post();
-    blueprint.steps.push({
-      step: "runPHP",
-      // $insert_post='${data.slug}'; is a hack to allow us to find this step and extract the slug
-      code: `<?php require_once 'wordpress/wp-load.php'; wp_insert_post(array('post_title' => '${data.title}', 'post_content' => '${data.content}', 'post_slug' => '${data.slug}', 'post_status' => 'publish')); ?>`,
-    });
+    blueprint.steps = [
+      {
+        step: "runPHP",
+        // $insert_post='${data.slug}'; is a hack to allow us to find this step and extract the slug
+        code: `<?php require_once 'wordpress/wp-load.php'; wp_insert_post(array('post_title' => '${data.title}', 'post_content' => '${data.content}', 'post_slug' => '${data.slug}', 'post_status' => 'publish')); ?>`,
+      },
+      ...blueprint.steps,
+    ];
     // override the landing page to open the post
     blueprint.landingPage = `/${data.slug}`;
   }
+
+  // Add default steps
+  blueprint.steps = [
+    {
+      step: "login",
+    },
+    {
+      step: "writeFile",
+      path: "/wordpress/wp-content/mu-plugins/rewrite.php",
+      data: "<?php add_action( 'after_setup_theme', function() { global $wp_rewrite; $wp_rewrite->set_permalink_structure('/%postname%/'); $wp_rewrite->flush_rules(); } );",
+    },
+    ...blueprint.steps,
+  ];
   return blueprint;
 };
 
@@ -154,17 +176,7 @@ const mergeBlueprints = (blueprints: any[]) => {
     features: {
       networking: true,
     },
-    steps: [
-      {
-        step: "login",
-      },
-      {
-        // Use pretty permalinks to ensure the post is accessible
-        step: "writeFile",
-        path: "/wordpress/wp-content/mu-plugins/rewrite.php",
-        data: "<?php add_action( 'after_setup_theme', function() { global $wp_rewrite; $wp_rewrite->set_permalink_structure('/%postname%/'); $wp_rewrite->flush_rules(); } );",
-      },
-    ],
+    steps: [],
   };
 
   const landingPages: string[] = [];
