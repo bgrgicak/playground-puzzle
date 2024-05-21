@@ -1,3 +1,6 @@
+> **This project is now [part of WordPress Playground](https://github.com/WordPress/wordpress-playground/tree/trunk/packages/playground/puzzle). **
+
+
 # Playground puzzle
 
 This app allows you to scan Playground puzzle pieces, and start a site using WordPress Playground.
