@@ -1,4 +1,4 @@
-> **This project is now [part of WordPress Playground](https://github.com/WordPress/wordpress-playground/tree/trunk/packages/playground/puzzle). **
+> **This project is now [part of WordPress Playground](https://github.com/WordPress/wordpress-playground/tree/trunk/packages/playground/puzzle).**
 
 
 # Playground puzzle
